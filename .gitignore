@@ -31,7 +31,3 @@ coverage/
 # OS
 .DS_Store
 Thumbs.db
-
-# Test
-*.test.js
-*.spec.js

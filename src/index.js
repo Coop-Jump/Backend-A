@@ -1,40 +1,13 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
+import { pathToFileURL } from 'node:url';
+
 import dotenv from 'dotenv';
 
-import healthRouter from './routes/health.js';
+import app from './app.js';
 import pool from './config/database.js';
 
 dotenv.config();
 
-const app = express();
 const PORT = process.env.PORT || 3000;
-
-app.use(helmet());
-app.use(cors());
-app.use(morgan('combined'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.use('/health', healthRouter);
-
-app.use((req, res) => {
-  res.status(404).json({
-    status: 'error',
-    message: 'Route not found',
-  });
-});
-
-app.use((err, req, res, next) => {
-  console.error('Error:', err);
-  res.status(500).json({
-    status: 'error',
-    message: 'Internal server error',
-  });
-});
-
 let server;
 
 async function startServer() {
@@ -74,9 +47,14 @@ async function gracefulShutdown(signal) {
   }
 }
 
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+const isMainModule =
+  process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
 
-startServer();
+if (isMainModule) {
+  process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+  process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
+  startServer();
+}
 
 export default app;
