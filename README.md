@@ -23,3 +23,23 @@ Respuestas:
 - `201 Created`: usuario registrado correctamente.
 - `400 Bad Request`: faltan campos o no cumplen las reglas de validación.
 - `409 Conflict`: el `username` ya existe.
+
+## Middleware de autenticación
+
+`src/middleware/authenticateToken.js` exporta `authenticateToken` (y la factory `createAuthenticateToken`).
+
+Uso en rutas privadas:
+
+```js
+import { authenticateToken } from './middleware/authenticateToken.js';
+
+router.get('/profile', authenticateToken, (req, res) => {
+  res.json({ user: req.user });
+});
+```
+
+Comportamiento:
+
+- `401`: falta el header `Authorization: Bearer <token>` o el token está vacío.
+- `403`: el token es inválido o expiró.
+- En caso de token válido, el payload decodificado se inyecta en `req.user`.
