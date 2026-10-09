@@ -1,3 +1,10 @@
+<!-- calidad:inicio -->
+![Calidad](https://img.shields.io/badge/Calidad-15%2F100-red) ![Cumple](https://img.shields.io/badge/Cumple-9%2F15-yellow) ![Aprobado](https://img.shields.io/badge/Aprobado-NO-red)
+
+**Calidad de servicios (heurístico):** índice **15/100** · cumple **9/15** · aprobado **NO** · capas **2**
+`SEC 2 · SQL 0 · DBG 5 · duplicación 24.4% · endpoints 3 · tests 3`
+<!-- calidad:fin -->
+
 # Backend-A
 
 ## Registro de usuarios
