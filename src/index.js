@@ -13,11 +13,8 @@ let server;
 async function startServer() {
   try {
     await pool.query('SELECT 1');
-    console.log('Database connection established');
 
-    server = app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
-    });
+    server = app.listen(PORT);
   } catch (error) {
     console.error('Failed to start server:', error);
     process.exit(1);
@@ -25,14 +22,10 @@ async function startServer() {
 }
 
 async function gracefulShutdown(signal) {
-  console.log(`Received ${signal}. Starting graceful shutdown...`);
-
   if (server) {
     server.close(async () => {
-      console.log('HTTP server closed');
       try {
         await pool.end();
-        console.log('Database pool closed');
         process.exit(0);
       } catch (error) {
         console.error('Error during shutdown:', error);
