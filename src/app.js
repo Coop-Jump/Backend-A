@@ -5,6 +5,7 @@ import morgan from 'morgan';
 
 import authRouter from './routes/auth.js';
 import healthRouter from './routes/health.js';
+import levelsRouter from './routes/levels.js';
 
 export function createApp({ authRouter: registeredAuthRouter = authRouter, logger = true } = {}) {
   const app = express();
@@ -21,6 +22,7 @@ export function createApp({ authRouter: registeredAuthRouter = authRouter, logge
 
   app.use('/health', healthRouter);
   app.use('/auth', registeredAuthRouter);
+  app.use('/levels', levelsRouter);
 
   app.use((req, res) => {
     res.status(404).json({
