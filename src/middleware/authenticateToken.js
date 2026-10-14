@@ -3,11 +3,11 @@ import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
-const DEFAULT_JWT_SECRET = 'backend-a-jwt-secret-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 export function createAuthenticateToken({
   jwtVerifier = jwt,
-  jwtSecret = process.env.JWT_SECRET || DEFAULT_JWT_SECRET,
+  jwtSecret = process.env.JWT_SECRET || JWT_SECRET,
 } = {}) {
   return function authenticateToken(req, res, next) {
     const header = req.headers.authorization;

@@ -10,7 +10,7 @@ dotenv.config();
 const DEFAULT_SALT_ROUNDS = 12;
 const USERNAME_MAX_LENGTH = 50;
 const PASSWORD_MAX_BYTES = 72;
-const DEFAULT_JWT_SECRET = 'backend-a-jwt-secret-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = '24h';
 
 function validateRegistration(body) {
@@ -92,7 +92,7 @@ export function createAuthRouter({
   passwordHasher = bcrypt,
   saltRounds = DEFAULT_SALT_ROUNDS,
   jwtSigner = jwt,
-  jwtSecret = process.env.JWT_SECRET || DEFAULT_JWT_SECRET,
+  jwtSecret = JWT_SECRET,
 } = {}) {
   const router = Router();
 
