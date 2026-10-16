@@ -1,0 +1,749 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Backend-A API",
+    "version": "1.0.0",
+    "description": "API para gestión de niveles, usuarios y runs (partidas) de juego. Diseñada con arquitectura en capas: presentación (routes), lógica de negocio (services) y acceso a datos (models/repositories).",
+    "contact": {
+      "name": "Backend-A Team",
+      "url": "https://github.com/Coop-Jump/Backend-A"
+    },
+    "license": {
+      "name": "ISC",
+      "url": "https://opensource.org/licenses/ISC"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor de desarrollo local"
+    },
+    {
+      "url": "https://api.backend-a.example.com",
+      "description": "Servidor de producción (ejemplo)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Verificación de estado del servicio y base de datos"
+    },
+    {
+      "name": "Auth",
+      "description": "Autenticación de usuarios (registro, login, JWT)"
+    },
+    {
+      "name": "Levels",
+      "description": "Gestión de niveles de juego y runs (partidas completadas)"
+    }
+  ],
+  "security": [],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health check del servicio",
+        "description": "Verifica que la API y la base de datos estén operativas.",
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "description": "Servicio y base de datos operativos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                },
+                "example": {
+                  "status": "ok",
+                  "database": "connected",
+                  "timestamp": "2026-10-16T12:00:00.000Z"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Servicio disponible pero base de datos desconectada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "database": "disconnected",
+                  "timestamp": "2026-10-16T12:00:00.000Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Registrar nuevo usuario",
+        "description": "Crea una cuenta de usuario con username y password. El password se hashea con bcrypt antes de almacenarse.",
+        "operationId": "registerUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              },
+              "example": {
+                "username": "player1",
+                "password": "ContraseñaSegura123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario registrado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "message": "User registered successfully",
+                  "user": {
+                    "id": "0a5b230b-0f54-4a4b-8a5e-7c0c3c78a471",
+                    "username": "player1",
+                    "created_at": "2026-10-16T12:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Campos requeridos faltantes o inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "username and password are required",
+                  "fields": ["username", "password"]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "El username ya existe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "Username already exists",
+                  "fields": ["username"]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Iniciar sesión y obtener JWT",
+        "description": "Autentica al usuario con username y password. Retorna un token JWT válido por 24 horas si las credenciales son correctas.",
+        "operationId": "loginUser",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              },
+              "example": {
+                "username": "player1",
+                "password": "ContraseñaSegura123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Autenticación exitosa, retorna token JWT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "message": "Login successful",
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                  "user": {
+                    "id": "0a5b230b-0f54-4a4b-8a5e-7c0c3c78a471",
+                    "username": "player1",
+                    "created_at": "2026-10-16T12:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Campos requeridos faltantes o inválidos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "username and password are required",
+                  "fields": ["username", "password"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "Invalid username or password"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/levels": {
+      "get": {
+        "tags": ["Levels"],
+        "summary": "Listar todos los niveles",
+        "description": "Retorna una lista de todos los niveles de juego ordenados por fecha de creación. Requiere autenticación JWT.",
+        "operationId": "listLevels",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de niveles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LevelsListResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "levels": [
+                    {
+                      "id": 1,
+                      "title": "Nivel Principiante",
+                      "difficulty": "easy",
+                      "grid_json": { "width": 10, "height": 10 },
+                      "created_at": "2026-10-16T12:00:00.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "Authorization token is required"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/levels/{id}": {
+      "get": {
+        "tags": ["Levels"],
+        "summary": "Obtener un nivel por ID",
+        "description": "Retorna los detalles de un nivel específico por su identificador. Requiere autenticación JWT.",
+        "operationId": "getLevelById",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            },
+            "description": "Identificador único del nivel",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Nivel encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LevelResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "level": {
+                    "id": 1,
+                    "title": "Nivel Principiante",
+                    "difficulty": "easy",
+                    "grid_json": { "width": 10, "height": 10 },
+                    "created_at": "2026-10-16T12:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nivel no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "Level not found"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "Authorization token is required"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/levels/runs": {
+      "post": {
+        "tags": ["Levels"],
+        "summary": "Registrar una partida completada (run)",
+        "description": "Guarda el resultado de una partida (nivel, tiempo de completación y muertes) asociada al usuario autenticado. Requiere autenticación JWT.",
+        "operationId": "createRun",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRunRequest"
+              },
+              "example": {
+                "level_id": 1,
+                "completion_time_ms": 12500,
+                "deaths": 3
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Partida registrada exitosamente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "run": {
+                    "id": 1,
+                    "user_id": "user-id-123",
+                    "level_id": 1,
+                    "completion_time_ms": 12500,
+                    "deaths": 3,
+                    "created_at": "2026-10-16T12:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Campos requeridos faltantes o valores no numéricos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "level_id, completion_time_ms, deaths required"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "User not authenticated"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/levels/users/me/runs": {
+      "get": {
+        "tags": ["Levels"],
+        "summary": "Obtener historial de runs del usuario autenticado",
+        "description": "Retorna todas las partidas completadas por el usuario actual, ordenadas de más reciente a más antigua, incluyendo el título del nivel. Requiere autenticación JWT.",
+        "operationId": "getMyRuns",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Lista de runs del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunsListResponse"
+                },
+                "example": {
+                  "status": "success",
+                  "runs": [
+                    {
+                      "id": 1,
+                      "user_id": "user-id-123",
+                      "level_id": 1,
+                      "completion_time_ms": 12500,
+                      "deaths": 3,
+                      "level_title": "Nivel Principiante",
+                      "created_at": "2026-10-16T12:00:00.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "message": "User not authenticated"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Token JWT obtenido tras iniciar sesión en `/auth/login`. Enviar como `Authorization: Bearer <token>`."
+      }
+    },
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "required": ["status", "database", "timestamp"],
+        "properties": {
+          "status": { "type": "string", "enum": ["ok", "error"], "example": "ok" },
+          "database": { "type": "string", "enum": ["connected", "disconnected"], "example": "connected" },
+          "timestamp": { "type": "string", "format": "date-time", "example": "2026-10-16T12:00:00.000Z" }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "Nombre de usuario único (máx. 50 caracteres)",
+            "example": "player1"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 72,
+            "description": "Contraseña (máx. 72 bytes UTF-8, se hashea con bcrypt)",
+            "example": "ContraseñaSegura123"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "player1"
+          },
+          "password": {
+            "type": "string",
+            "example": "ContraseñaSegura123"
+          }
+        }
+      },
+      "AuthResponse": {
+        "type": "object",
+        "required": ["status", "message", "user"],
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "message": { "type": "string", "example": "User registered successfully" },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string", "example": "0a5b230b-0f54-4a4b-8a5e-7c0c3c78a471" },
+              "username": { "type": "string", "example": "player1" },
+              "created_at": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "required": ["status", "message", "token", "user"],
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "message": { "type": "string", "example": "Login successful" },
+          "token": { "type": "string", "description": "Token JWT válido 24h", "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string", "example": "0a5b230b-0f54-4a4b-8a5e-7c0c3c78a471" },
+              "username": { "type": "string", "example": "player1" },
+              "created_at": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
+      },
+      "LevelResponse": {
+        "type": "object",
+        "required": ["status", "level"],
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "level": {
+            "type": "object",
+            "required": ["id", "title", "difficulty", "grid_json", "created_at"],
+            "properties": {
+              "id": { "type": "integer", "format": "int64", "example": 1 },
+              "title": { "type": "string", "example": "Nivel Principiante" },
+              "difficulty": { "type": "string", "enum": ["easy", "medium", "hard"], "example": "easy" },
+              "grid_json": {
+                "type": "object",
+                "description": "Configuración del tablero del nivel",
+                "example": { "width": 10, "height": 10 }
+              },
+              "created_at": { "type": "string", "format": "date-time", "example": "2026-10-16T12:00:00.000Z" }
+            }
+          }
+        }
+      },
+      "LevelsListResponse": {
+        "type": "object",
+        "required": ["status", "levels"],
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "levels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LevelResponseItem"
+            }
+          }
+        }
+      },
+      "LevelResponseItem": {
+        "type": "object",
+        "required": ["id", "title", "difficulty", "grid_json", "created_at"],
+        "properties": {
+          "id": { "type": "integer", "format": "int64", "example": 1 },
+          "title": { "type": "string", "example": "Nivel Principiante" },
+          "difficulty": { "type": "string", "example": "easy" },
+          "grid_json": {
+            "type": "object",
+            "example": { "width": 10, "height": 10 }
+          },
+          "created_at": { "type": "string", "format": "date-time", "example": "2026-10-16T12:00:00.000Z" }
+        }
+      },
+      "CreateRunRequest": {
+        "type": "object",
+        "required": ["level_id", "completion_time_ms", "deaths"],
+        "properties": {
+          "level_id": {
+            "type": "integer",
+            "description": "ID del nivel completado",
+            "example": 1
+          },
+          "completion_time_ms": {
+            "type": "integer",
+            "description": "Tiempo de completación en milisegundos",
+            "example": 12500
+          },
+          "deaths": {
+            "type": "integer",
+            "description": "Número de muertes durante la partida",
+            "example": 3
+          }
+        }
+      },
+      "RunResponse": {
+        "type": "object",
+        "required": ["status", "run"],
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "run": {
+            "type": "object",
+            "required": ["id", "user_id", "level_id", "completion_time_ms", "deaths", "created_at"],
+            "properties": {
+              "id": { "type": "integer", "format": "int64", "example": 1 },
+              "user_id": { "type": "string", "example": "user-id-123" },
+              "level_id": { "type": "integer", "format": "int64", "example": 1 },
+              "completion_time_ms": { "type": "integer", "example": 12500 },
+              "deaths": { "type": "integer", "example": 3 },
+              "created_at": { "type": "string", "format": "date-time", "example": "2026-10-16T12:00:00.000Z" }
+            }
+          }
+        }
+      },
+      "RunsListResponse": {
+        "type": "object",
+        "required": ["status", "runs"],
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "runs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RunItem"
+            }
+          }
+        }
+      },
+      "RunItem": {
+        "type": "object",
+        "required": ["id", "user_id", "level_id", "completion_time_ms", "deaths", "created_at"],
+        "properties": {
+          "id": { "type": "integer", "format": "int64", "example": 1 },
+          "user_id": { "type": "string", "example": "user-id-123" },
+          "level_id": { "type": "integer", "format": "int64", "example": 1 },
+          "completion_time_ms": { "type": "integer", "example": 12500 },
+          "deaths": { "type": "integer", "example": 3 },
+          "level_title": { "type": "string", "example": "Nivel Principiante", "nullable": true },
+          "created_at": { "type": "string", "format": "date-time", "example": "2026-10-16T12:00:00.000Z" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["status", "message"],
+        "properties": {
+          "status": { "type": "string", "example": "error" },
+          "message": { "type": "string", "example": "Internal server error" },
+          "fields": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Campos con error de validación (solo en respuestas 400)",
+            "example": ["username", "password"]
+          }
+        }
+      }
+    }
+  }
+}
