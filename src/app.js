@@ -2,10 +2,17 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import swaggerUi from 'swagger-ui-express';
+import { readFileSync } from 'node:fs';
 
 import authRouter from './routes/auth.js';
 import healthRouter from './routes/health.js';
 import levelsRouter from './routes/levels.js';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const openApiSpec = JSON.parse(readFileSync(path.join(__dirname, '..', 'openapi.json'), 'utf8'));
 
 export function createApp({ authRouter: registeredAuthRouter = authRouter, logger = true } = {}) {
   const app = express();
@@ -23,6 +30,7 @@ export function createApp({ authRouter: registeredAuthRouter = authRouter, logge
   app.use('/health', healthRouter);
   app.use('/auth', registeredAuthRouter);
   app.use('/levels', levelsRouter);
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
   app.use((req, res) => {
     res.status(404).json({
