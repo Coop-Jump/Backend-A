@@ -1,8 +1,8 @@
 <!-- calidad:inicio -->
-![Calidad](https://img.shields.io/badge/Calidad-15%2F100-red) ![Cumple](https://img.shields.io/badge/Cumple-9%2F15-yellow) ![Aprobado](https://img.shields.io/badge/Aprobado-NO-red)
+![Calidad](https://img.shields.io/badge/Calidad-21%2F100-red) ![Aprobado](https://img.shields.io/badge/Aprobado-NO-red) ![Cumple](https://img.shields.io/badge/Cumple-12%2F15-green) ![Duplicación](https://img.shields.io/badge/Duplicaci%C3%B3n-20.7%25-yellow) ![SEC](https://img.shields.io/badge/SEC-0-green) ![SQL](https://img.shields.io/badge/SQL-0-green) ![DBG](https://img.shields.io/badge/DBG-0-green) ![Capas](https://img.shields.io/badge/Capas-3-green) ![Tests](https://img.shields.io/badge/Tests-7-green) ![EP](https://img.shields.io/badge/EP-7-orange)
 
-**Calidad de servicios (heurístico):** índice **15/100** · cumple **9/15** · aprobado **NO** · capas **2**
-`SEC 2 · SQL 0 · DBG 5 · duplicación 24.4% · endpoints 3 · tests 3`
+**Calidad de servicios (heurístico):** índice **21/100** · cumple **12/15** · aprobado **NO** · capas **3**
+Detalle completo en [`docs/EVALUACION.md`](docs/EVALUACION.md).
 <!-- calidad:fin -->
 
 # Backend-A
