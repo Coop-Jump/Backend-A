@@ -13,7 +13,7 @@ const PASSWORD_MAX_BYTES = 72;
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = '24h';
 
-function validateRegistration(body) {
+function validateCredentials(body, { checkLength = false } = {}) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
     return {
       message: 'username and password are required',
@@ -25,14 +25,8 @@ function validateRegistration(body) {
   const password = body.password;
   const fields = [];
 
-  if (!username) {
-    fields.push('username');
-  }
-
-  if (typeof password !== 'string' || !password.trim()) {
-    fields.push('password');
-  }
-
+  if (!username) fields.push('username');
+  if (typeof password !== 'string' || !password.trim()) fields.push('password');
   if (fields.length > 0) {
     return {
       message: 'username and password are required',
@@ -40,14 +34,14 @@ function validateRegistration(body) {
     };
   }
 
-  if (Array.from(username).length > USERNAME_MAX_LENGTH) {
+  if (checkLength && Array.from(username).length > USERNAME_MAX_LENGTH) {
     return {
       message: `username must be at most ${USERNAME_MAX_LENGTH} characters`,
       fields: ['username'],
     };
   }
 
-  if (Buffer.byteLength(password, 'utf8') > PASSWORD_MAX_BYTES) {
+  if (checkLength && Buffer.byteLength(password, 'utf8') > PASSWORD_MAX_BYTES) {
     return {
       message: `password must be at most ${PASSWORD_MAX_BYTES} bytes`,
       fields: ['password'],
@@ -57,34 +51,12 @@ function validateRegistration(body) {
   return { username, password };
 }
 
+function validateRegistration(body) {
+  return validateCredentials(body, { checkLength: true });
+}
+
 function validateLogin(body) {
-  if (!body || typeof body !== 'object' || Array.isArray(body)) {
-    return {
-      message: 'username and password are required',
-      fields: ['username', 'password'],
-    };
-  }
-
-  const username = typeof body.username === 'string' ? body.username.trim() : '';
-  const password = body.password;
-  const fields = [];
-
-  if (!username) {
-    fields.push('username');
-  }
-
-  if (typeof password !== 'string' || !password.trim()) {
-    fields.push('password');
-  }
-
-  if (fields.length > 0) {
-    return {
-      message: 'username and password are required',
-      fields,
-    };
-  }
-
-  return { username, password };
+  return validateCredentials(body, { checkLength: false });
 }
 
 export function createAuthRouter({
