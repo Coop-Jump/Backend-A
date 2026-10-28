@@ -108,7 +108,37 @@ export function createLevelsRouter({ db = pool } = {}) {
     }
   });
 
-  // GET /levels/users/me/runs - Historial del usuario (JWT)
+  // PUT /levels/:id - Actualizar nivel (JWT)
+  router.put('/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, difficulty, grid_json } = req.body;
+    try {
+      const result = await db.query(
+        'UPDATE levels SET title = $1, difficulty = $2, grid_json = $3 WHERE id = $4 RETURNING *',
+        [title, difficulty, JSON.stringify(grid_json), id],
+      );
+      if (result.rows.length === 0) return res.status(404).json({ status: 'error', message: 'Level not found' });
+      return res.status(200).json({ status: 'success', level: result.rows[0] });
+    } catch (e) {
+      console.error('Error updating level:', e);
+      return res.status(500).json({ status: 'error', message: 'Internal server error' });
+    }
+  });
+
+  // DELETE /levels/:id - Eliminar nivel (JWT)
+  router.delete('/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+      const result = await db.query('DELETE FROM levels WHERE id = $1 RETURNING *', [id]);
+      if (result.rows.length === 0) return res.status(404).json({ status: 'error', message: 'Level not found' });
+      return res.status(200).json({ status: 'success', message: 'Level deleted', level: result.rows[0] });
+    } catch (e) {
+      console.error('Error deleting level:', e);
+      return res.status(500).json({ status: 'error', message: 'Internal server error' });
+    }
+  });
+
+  // GET /users/me/runs - Historial del usuario (JWT)
   router.get('/users/me/runs', async (req, res) => {
     const userId = req.user?.sub || req.user?.id;
     if (!userId) return res.status(401).json({ status: 'error', message: 'User not authenticated' });
@@ -119,8 +149,8 @@ export function createLevelsRouter({ db = pool } = {}) {
         [userId],
       );
       return res.status(200).json({ status: 'success', runs: result.rows });
-    } catch (error) {
-      console.error('Error fetching runs:', error);
+    } catch (e) {
+      console.error('Error fetching runs:', e);
       return res.status(500).json({ status: 'error', message: 'Internal server error' });
     }
   });

@@ -382,6 +382,196 @@
             }
           }
         }
+      },
+      "put": {
+        "tags": ["Levels"],
+        "summary": "Actualizar un nivel",
+        "description": "Actualiza los datos de un nivel existente (título, dificultad y/o grid_json). Requiere autenticación JWT.",
+        "operationId": "updateLevel",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" },
+            "description": "Identificador único del nivel",
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateLevelRequest" },
+              "example": {
+                "title": "Nivel Avanzado",
+                "difficulty": "hard",
+                "grid_json": { "width": 15, "height": 15 }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Nivel actualizado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LevelResponse" },
+                "example": {
+                  "status": "success",
+                  "level": {
+                    "id": 1,
+                    "title": "Nivel Avanzado",
+                    "difficulty": "hard",
+                    "grid_json": { "width": 15, "height": 15 },
+                    "created_at": "2026-10-16T12:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Nivel no encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "status": "error", "message": "Level not found" }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "status": "error", "message": "Authorization token is required" }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Levels"],
+        "summary": "Eliminar un nivel",
+        "description": "Elimina un nivel del sistema. Requiere autenticación JWT.",
+        "operationId": "deleteLevel",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" },
+            "description": "Identificador único del nivel",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Nivel eliminado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeleteLevelResponse" },
+                "example": { "status": "success", "message": "Level deleted" }
+              }
+            }
+          },
+          "404": {
+            "description": "Nivel no encontrado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "status": "error", "message": "Level not found" }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "status": "error", "message": "Authorization token is required" }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/levels/{id}/runs": {
+      "get": {
+        "tags": ["Levels"],
+        "summary": "Leaderboard por nivel",
+        "description": "Retorna las partidas completadas de un nivel específico, ordenadas por tiempo de completación ascendente (top 10). Requiere autenticación JWT.",
+        "operationId": "getLeaderboardByLevel",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": { "type": "integer", "format": "int64" },
+            "description": "Identificador único del nivel",
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Leaderboard del nivel",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RunsListResponse" },
+                "example": {
+                  "status": "success",
+                  "runs": [
+                    {
+                      "id": 1,
+                      "user_id": "user-id-123",
+                      "level_id": 1,
+                      "completion_time_ms": 12500,
+                      "deaths": 3,
+                      "level_title": "Nivel Principiante",
+                      "created_at": "2026-10-16T12:00:00.000Z"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "status": "error", "message": "Authorization token is required" }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
       }
     },
     "/levels/runs": {
@@ -741,6 +931,49 @@
             "items": { "type": "string" },
             "description": "Campos con error de validación (solo en respuestas 400)",
             "example": ["username", "password"]
+          }
+        }
+      },
+      "UpdateLevelRequest": {
+        "type": "object",
+        "required": ["title", "difficulty", "grid_json"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 50,
+            "description": "Nuevo título del nivel",
+            "example": "Nivel Avanzado"
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": ["easy", "medium", "hard"],
+            "description": "Nueva dificultad del nivel",
+            "example": "hard"
+          },
+          "grid_json": {
+            "type": "object",
+            "description": "Nueva configuración del tablero del nivel",
+            "example": { "width": 15, "height": 15 }
+          }
+        }
+      },
+      "DeleteLevelResponse": {
+        "type": "object",
+        "required": ["status", "message"],
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "message": { "type": "string", "example": "Level deleted" },
+          "level": {
+            "type": "object",
+            "description": "Nivel eliminado (datos del registro previo al borrado)",
+            "properties": {
+              "id": { "type": "integer", "format": "int64", "example": 1 },
+              "title": { "type": "string", "example": "Nivel Principiante" },
+              "difficulty": { "type": "string", "example": "easy" },
+              "grid_json": { "type": "object", "example": { "width": 10, "height": 10 } },
+              "created_at": { "type": "string", "format": "date-time" }
+            }
           }
         }
       }
