@@ -1,13 +1,11 @@
 import { Router } from 'express';
 
 import pool from '../config/database.js';
-import { authenticateToken } from '../middleware/authenticateToken.js';
 
 export function createLevelsRouter({ db = pool } = {}) {
   const router = Router();
 
-  // Aplicar middleware de autenticación JWT a todas las rutas
-  router.use(authenticateToken);
+  // Rutas protegidas: autenticación aplicada en app.js al montar el router
 
   // GET /levels - Listar niveles (protegido JWT)
   router.get('/', async (req, res) => {
