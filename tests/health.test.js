@@ -26,24 +26,24 @@ function buildRouter({ connected = true } = {}) {
   return router;
 }
 
-describe('Health endpoint', () => {
-  it('debe retornar estado ok cuando la base de datos está conectada', async () => {
-    const app = express();
-    app.use('/health', buildRouter({ connected: true }));
-    const response = await request(app).get('/health');
-    assert.equal(response.status, 200);
-    assert.equal(response.body.status, 'ok');
-    assert.equal(response.body.database, 'connected');
-  });
+// Test 1: Debe retornar estado ok cuando la base de datos está conectada
+test('debe retornar estado ok cuando la base de datos está conectada', async () => {
+  const app = express();
+  app.use('/health', buildRouter({ connected: true }));
+  const response = await request(app).get('/health');
+  assert.equal(response.status, 200);
+  assert.equal(response.body.status, 'ok');
+  assert.equal(response.body.database, 'connected');
+});
 
-  it('debe retornar 503 cuando falla la conexión', async () => {
-    const app = express();
-    app.use('/health', buildRouter({ connected: false }));
-    const response = await request(app).get('/health');
-    assert.equal(response.status, 503);
-    assert.equal(response.body.status, 'error');
-    assert.equal(response.body.database, 'disconnected');
-  });
+// Test 2: Debe retornar 503 cuando falla la conexión
+test('debe retornar 503 cuando falla la conexión', async () => {
+  const app = express();
+  app.use('/health', buildRouter({ connected: false }));
+  const response = await request(app).get('/health');
+  assert.equal(response.status, 503);
+  assert.equal(response.body.status, 'error');
+  assert.equal(response.body.database, 'disconnected');
 });
 
 // Directly exercise database.testConnection and the pool error handler
