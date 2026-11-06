@@ -10,6 +10,7 @@ import { readFileSync } from 'node:fs';
 import authRouter from './routes/auth.js';
 import healthRouter from './routes/health.js';
 import levelsRouter from './routes/levels.js';
+import { authenticateToken } from './middleware/authenticateToken.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const openApiSpec = JSON.parse(readFileSync(path.join(__dirname, '..', 'openapi.json'), 'utf8'));
@@ -29,7 +30,7 @@ export function createApp({ authRouter: registeredAuthRouter = authRouter, logge
 
   app.use('/health', healthRouter);
   app.use('/auth', registeredAuthRouter);
-  app.use('/levels', levelsRouter);
+  app.use('/levels', authenticateToken, levelsRouter);
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
   app.use((req, res) => {
