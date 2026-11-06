@@ -18,6 +18,7 @@
 | Tests (archivos) | 19 |
 | Cobertura de líneas | 81.3% (mínimo 80%) |
 | Capas detectadas | presentacion, logica, datos |
+| Pushes directos a `main` (sin PR) | 0 |
 
 > **Qué no se consideró:** el repositorio publica un informe de cobertura que **no se aceptó** como medición (coverage.xml: declara cobertura de archivos que un runner de Python no puede medir (ej. src/app.js)). Esos valores no se usan: el número de arriba sale de **ejecutar la suite** tal como está en el repositorio. Un artefacto de cobertura sirve cuando lo genera un runner sobre el mismo código; si declara líneas que el runner no puede ejecutar, no es una medición.
 
