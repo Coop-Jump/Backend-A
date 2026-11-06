@@ -264,7 +264,7 @@
                   "status": "success",
                   "levels": [
                     {
-                      "id": 1,
+                      "id": "63c91dcc-943f-4013-b84d-92add8b35a30",
                       "title": "Nivel Principiante",
                       "difficulty": "easy",
                       "grid_json": { "width": 10, "height": 10 },
@@ -315,11 +315,11 @@
             "name": "id",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string",
+              "format": "uuid"
             },
-            "description": "Identificador único del nivel",
-            "example": 1
+            "description": "Identificador único del nivel (UUID)",
+            "example": "63c91dcc-943f-4013-b84d-92add8b35a30"
           }
         ],
         "responses": {
@@ -333,7 +333,7 @@
                 "example": {
                   "status": "success",
                   "level": {
-                    "id": 1,
+                    "id": "63c91dcc-943f-4013-b84d-92add8b35a30",
                     "title": "Nivel Principiante",
                     "difficulty": "easy",
                     "grid_json": { "width": 10, "height": 10 },
@@ -394,9 +394,9 @@
             "in": "path",
             "name": "id",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" },
-            "description": "Identificador único del nivel",
-            "example": 1
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Identificador único del nivel (UUID)",
+            "example": "63c91dcc-943f-4013-b84d-92add8b35a30"
           }
         ],
         "requestBody": {
@@ -421,7 +421,7 @@
                 "example": {
                   "status": "success",
                   "level": {
-                    "id": 1,
+                    "id": "63c91dcc-943f-4013-b84d-92add8b35a30",
                     "title": "Nivel Avanzado",
                     "difficulty": "hard",
                     "grid_json": { "width": 15, "height": 15 },
@@ -470,9 +470,9 @@
             "in": "path",
             "name": "id",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" },
-            "description": "Identificador único del nivel",
-            "example": 1
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Identificador único del nivel (UUID)",
+            "example": "63c91dcc-943f-4013-b84d-92add8b35a30"
           }
         ],
         "responses": {
@@ -526,9 +526,9 @@
             "in": "path",
             "name": "id",
             "required": true,
-            "schema": { "type": "integer", "format": "int64" },
-            "description": "Identificador único del nivel",
-            "example": 1
+            "schema": { "type": "string", "format": "uuid" },
+            "description": "Identificador único del nivel (UUID)",
+            "example": "63c91dcc-943f-4013-b84d-92add8b35a30"
           }
         ],
         "responses": {
@@ -541,9 +541,9 @@
                   "status": "success",
                   "runs": [
                     {
-                      "id": 1,
+                      "id": "63c91dcc-943f-4013-b84d-92add8b35a30",
                       "user_id": "user-id-123",
-                      "level_id": 1,
+                      "level_id": "63c91dcc-943f-4013-b84d-92add8b35a30",
                       "completion_time_ms": 12500,
                       "deaths": 3,
                       "level_title": "Nivel Principiante",
@@ -589,7 +589,7 @@
                 "$ref": "#/components/schemas/CreateRunRequest"
               },
               "example": {
-                "level_id": 1,
+                "level_id": "63c91dcc-943f-4013-b84d-92add8b35a30",
                 "completion_time_ms": 12500,
                 "deaths": 3
               }
@@ -607,9 +607,9 @@
                 "example": {
                   "status": "success",
                   "run": {
-                    "id": 1,
+                    "id": "63c91dcc-943f-4013-b84d-92add8b35a30",
                     "user_id": "user-id-123",
-                    "level_id": 1,
+                    "level_id": "63c91dcc-943f-4013-b84d-92add8b35a30",
                     "completion_time_ms": 12500,
                     "deaths": 3,
                     "created_at": "2026-10-16T12:00:00.000Z"
@@ -678,9 +678,9 @@
                   "status": "success",
                   "runs": [
                     {
-                      "id": 1,
+                      "id": "63c91dcc-943f-4013-b84d-92add8b35a30",
                       "user_id": "user-id-123",
-                      "level_id": 1,
+                      "level_id": "63c91dcc-943f-4013-b84d-92add8b35a30",
                       "completion_time_ms": 12500,
                       "deaths": 3,
                       "level_title": "Nivel Principiante",
@@ -814,7 +814,7 @@
             "type": "object",
             "required": ["id", "title", "difficulty", "grid_json", "created_at"],
             "properties": {
-              "id": { "type": "integer", "format": "int64", "example": 1 },
+              "id": { "type": "string", "format": "uuid", "example": "63c91dcc-943f-4013-b84d-92add8b35a30" },
               "title": { "type": "string", "example": "Nivel Principiante" },
               "difficulty": { "type": "string", "enum": ["easy", "medium", "hard"], "example": "easy" },
               "grid_json": {
@@ -844,7 +844,7 @@
         "type": "object",
         "required": ["id", "title", "difficulty", "grid_json", "created_at"],
         "properties": {
-          "id": { "type": "integer", "format": "int64", "example": 1 },
+          "id": { "type": "string", "format": "uuid", "example": "63c91dcc-943f-4013-b84d-92add8b35a30" },
           "title": { "type": "string", "example": "Nivel Principiante" },
           "difficulty": { "type": "string", "example": "easy" },
           "grid_json": {
@@ -859,9 +859,10 @@
         "required": ["level_id", "completion_time_ms", "deaths"],
         "properties": {
           "level_id": {
-            "type": "integer",
-            "description": "ID del nivel completado",
-            "example": 1
+            "type": "string",
+            "format": "uuid",
+            "description": "ID (UUID) del nivel completado",
+            "example": "63c91dcc-943f-4013-b84d-92add8b35a30"
           },
           "completion_time_ms": {
             "type": "integer",
@@ -884,9 +885,9 @@
             "type": "object",
             "required": ["id", "user_id", "level_id", "completion_time_ms", "deaths", "created_at"],
             "properties": {
-              "id": { "type": "integer", "format": "int64", "example": 1 },
+              "id": { "type": "string", "format": "uuid", "example": "63c91dcc-943f-4013-b84d-92add8b35a30" },
               "user_id": { "type": "string", "example": "user-id-123" },
-              "level_id": { "type": "integer", "format": "int64", "example": 1 },
+              "level_id": { "type": "string", "format": "uuid", "example": "63c91dcc-943f-4013-b84d-92add8b35a30" },
               "completion_time_ms": { "type": "integer", "example": 12500 },
               "deaths": { "type": "integer", "example": 3 },
               "created_at": { "type": "string", "format": "date-time", "example": "2026-10-16T12:00:00.000Z" }
@@ -911,9 +912,9 @@
         "type": "object",
         "required": ["id", "user_id", "level_id", "completion_time_ms", "deaths", "created_at"],
         "properties": {
-          "id": { "type": "integer", "format": "int64", "example": 1 },
+          "id": { "type": "string", "format": "uuid", "example": "63c91dcc-943f-4013-b84d-92add8b35a30" },
           "user_id": { "type": "string", "example": "user-id-123" },
-          "level_id": { "type": "integer", "format": "int64", "example": 1 },
+          "level_id": { "type": "string", "format": "uuid", "example": "63c91dcc-943f-4013-b84d-92add8b35a30" },
           "completion_time_ms": { "type": "integer", "example": 12500 },
           "deaths": { "type": "integer", "example": 3 },
           "level_title": { "type": "string", "example": "Nivel Principiante", "nullable": true },
@@ -968,7 +969,7 @@
             "type": "object",
             "description": "Nivel eliminado (datos del registro previo al borrado)",
             "properties": {
-              "id": { "type": "integer", "format": "int64", "example": 1 },
+              "id": { "type": "string", "format": "uuid", "example": "63c91dcc-943f-4013-b84d-92add8b35a30" },
               "title": { "type": "string", "example": "Nivel Principiante" },
               "difficulty": { "type": "string", "example": "easy" },
               "grid_json": { "type": "object", "example": { "width": 10, "height": 10 } },

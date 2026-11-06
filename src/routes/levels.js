@@ -89,10 +89,14 @@ export function createLevelsRouter({ db = pool } = {}) {
       return res.status(400).json({ status: 'error', message: 'level_id, completion_time_ms, deaths required' });
     }
 
-    const lid = parseInt(level_id, 10),
+    // level_id es un UUID: se pasa como string, la base valida el formato.
+    if (typeof level_id !== 'string' || !level_id.trim()) {
+      return res.status(400).json({ status: 'error', message: 'level_id must be a valid level id' });
+    }
+    const lid = level_id.trim(),
       time = parseInt(completion_time_ms, 10),
       d = parseInt(deaths, 10);
-    if (isNaN(lid) || isNaN(time) || isNaN(d)) return res.status(400).json({ status: 'error', message: 'Numeric values required' });
+    if (isNaN(time) || isNaN(d)) return res.status(400).json({ status: 'error', message: 'Numeric values required' });
 
     try {
       const result = await db.query(
@@ -101,6 +105,12 @@ export function createLevelsRouter({ db = pool } = {}) {
       );
       return res.status(201).json({ status: 'success', run: result.rows[0] });
     } catch (error) {
+      if (error.code === '22P02') {
+        return res.status(400).json({ status: 'error', message: 'level_id must be a valid level id' });
+      }
+      if (error.code === '23503') {
+        return res.status(404).json({ status: 'error', message: 'Level not found' });
+      }
       console.error('Error creating run:', error);
       return res.status(500).json({ status: 'error', message: 'Internal server error' });
     }

@@ -17,6 +17,7 @@ function buildMockDb() {
   const db = {
     query: async (sql, values) => {
       calls.push({ sql, values });
+      sql = sql.replace(/\s+/g, ' ').trim();
       if (sql.includes('SELECT id, title, difficulty, grid_json, created_at FROM levels ORDER BY created_at ASC')) {
         return { rows: [{ id: 'l1', title: 'Level 1', difficulty: 'easy', grid_json: [], created_at: new Date() }, { id: 'l2', title: 'Level 2', difficulty: 'medium', grid_json: [], created_at: new Date() }], rowCount: 2 };
       }
