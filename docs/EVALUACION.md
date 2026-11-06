@@ -3,7 +3,7 @@
 
 > Documento **generado automáticamente** por la cátedra de Programación III (RepoSense + análisis de calidad + constancia). **No editar a mano**: se regenera en cada evaluación.
 > Rama evaluada: `main`. Análisis **heurístico** (regex + métricas): es una criba para orientar la revisión, **no una nota**.
-> Generado: 2026-11-05.
+> Generado: 2026-11-06.
 
 ## 1. Veredicto
 
@@ -13,10 +13,10 @@
 | Índice de calidad de servicios | **100/100** (mínimo 50) |
 | Criterios cumplidos | **15/15** |
 | Aprobado (semáforo) | **SI** |
-| Código (LOC) | 519 |
+| Código (LOC) | 530 |
 | Archivos de código | 10 |
 | Tests (archivos) | 19 |
-| Cobertura de líneas | 82.4% (mínimo 80%) |
+| Cobertura de líneas | 81.3% (mínimo 80%) |
 | Capas detectadas | presentacion, logica, datos |
 
 > **Qué no se consideró:** el repositorio publica un informe de cobertura que **no se aceptó** como medición (coverage.xml: declara cobertura de archivos que un runner de Python no puede medir (ej. src/app.js)). Esos valores no se usan: el número de arriba sale de **ejecutar la suite** tal como está en el repositorio. Un artefacto de cobertura sirve cuando lo genera un runner sobre el mismo código; si declara líneas que el runner no puede ejecutar, no es una medición.
@@ -109,7 +109,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Complejidad ciclomática: cantidad de caminos posibles dentro de una función (condicionales, bucles, casos).
 - **Por qué importa:** Muchos caminos = difícil de seguir y de probar; suelen esconderse casos sin cubrir.
-- **Tu resultado:** **0** bloque(s) de complejidad alta _(máximo 5 por 1000 LOC (tenés 519 LOC))_
+- **Tu resultado:** **0** bloque(s) de complejidad alta _(máximo 5 por 1000 LOC (tenés 530 LOC))_
 
 ### 12. Funciones/métodos largos o con muchos parámetros (Tam) — OK
 
@@ -127,7 +127,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Porcentaje de líneas de código ejecutadas por la suite de tests (cobertura real, no cantidad de archivos de test).
 - **Por qué importa:** Un test que existe pero no ejecuta el código no protege de nada: la cobertura muestra qué partes quedan sin verificar.
-- **Tu resultado:** **82.4%** de líneas cubiertas · fuente: ejecución: c8 _(mínimo 80% de líneas)_
+- **Tu resultado:** **81.3%** de líneas cubiertas · fuente: ejecución: c8 _(mínimo 80% de líneas)_
 - **Qué no se consideró:** el informe de cobertura publicado en el repositorio no se aceptó (coverage.xml: declara cobertura de archivos que un runner de Python no puede medir (ej. src/app.js)).
 
 ### 15. Endpoints del backend (EP) — OK
