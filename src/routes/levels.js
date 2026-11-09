@@ -1,8 +1,40 @@
 import { Router } from 'express';
 
 import pool from '../config/database.js';
+import { LevelRepository } from '../repositories/level.repository.js';
+import { LevelService } from '../services/level.service.js';
+import { validateLevelPayload } from '../validators/level.validator.js';
 
-export function createLevelsRouter({ db = pool } = {}) {
+const INVALID_UUID = '22P02';
+const FOREIGN_KEY_VIOLATION = '23503';
+
+function internalError(res) {
+  return res.status(500).json({ status: 'error', message: 'Internal server error' });
+}
+
+function levelNotFound(res) {
+  return res.status(404).json({ status: 'error', message: 'Level not found' });
+}
+
+function invalidLevel(res, validation) {
+  return res.status(400).json({
+    status: 'error',
+    message: validation.message,
+    fields: validation.fields,
+  });
+}
+
+// Entero no negativo (número o string numérico estricto); null si no es válido.
+function toNonNegativeInt(value) {
+  if (typeof value === 'number') return Number.isSafeInteger(value) && value >= 0 ? value : null;
+  if (typeof value === 'string' && /^\d+$/.test(value.trim())) {
+    const parsed = parseInt(value, 10);
+    return Number.isSafeInteger(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+export function createLevelsRouter({ db = pool, levelService = new LevelService(new LevelRepository(db)) } = {}) {
   const router = Router();
 
   // Rutas protegidas: autenticación aplicada en app.js al montar el router
@@ -10,16 +42,34 @@ export function createLevelsRouter({ db = pool } = {}) {
   // GET /levels - Listar niveles (protegido JWT)
   router.get('/', async (req, res) => {
     try {
-      const result = await db.query(
-        'SELECT id, title, difficulty, grid_json, created_at FROM levels ORDER BY created_at ASC',
-      );
+      const result = await levelService.findAll();
       return res.status(200).json({
         status: 'success',
         levels: result.rows,
       });
     } catch (error) {
       console.error('Error fetching levels:', error);
-      return res.status(500).json({ status: 'error', message: 'Internal server error' });
+      return internalError(res);
+    }
+  });
+
+  // POST /levels - Crear nivel (JWT)
+  router.post('/', async (req, res) => {
+    const validation = validateLevelPayload(req.body);
+    if (validation.fields) return invalidLevel(res, validation);
+
+    const createdBy = req.user?.sub || req.user?.id || null;
+
+    try {
+      const result = await levelService.create({ ...validation.value, created_by: createdBy });
+      return res.status(201).json({ status: 'success', level: result.rows[0] });
+    } catch (error) {
+      // created_by apunta a un usuario que ya no existe (token de un usuario borrado)
+      if (error.code === FOREIGN_KEY_VIOLATION) {
+        return res.status(401).json({ status: 'error', message: 'User not authenticated' });
+      }
+      console.error('Error creating level:', error);
+      return internalError(res);
     }
   });
 
@@ -28,28 +78,19 @@ export function createLevelsRouter({ db = pool } = {}) {
     const { id } = req.params;
 
     try {
-      const result = await db.query(
-        'SELECT id, title, difficulty, grid_json, created_at FROM levels WHERE id = $1',
-        [id],
-      );
+      const result = await levelService.findById(id);
 
-      if (result.rows.length === 0) {
-        return res.status(404).json({
-          status: 'error',
-          message: 'Level not found',
-        });
-      }
+      if (result.rows.length === 0) return levelNotFound(res);
 
       return res.status(200).json({
         status: 'success',
         level: result.rows[0],
       });
     } catch (error) {
+      // Un id que no es UUID no puede existir: es un 404, no un error del servidor.
+      if (error.code === INVALID_UUID) return levelNotFound(res);
       console.error('Error fetching level:', error);
-      return res.status(500).json({
-        status: 'error',
-        message: 'Internal server error',
-      });
+      return internalError(res);
     }
   });
 
@@ -74,8 +115,9 @@ export function createLevelsRouter({ db = pool } = {}) {
         runs: result.rows,
       });
     } catch (error) {
+      if (error.code === INVALID_UUID) return levelNotFound(res);
       console.error('Error fetching runs leaderboard:', error);
-      return res.status(500).json({ status: 'error', message: 'Internal server error' });
+      return internalError(res);
     }
   });
 
@@ -84,7 +126,7 @@ export function createLevelsRouter({ db = pool } = {}) {
     const userId = req.user?.sub || req.user?.id;
     if (!userId) return res.status(401).json({ status: 'error', message: 'User not authenticated' });
 
-    const { level_id, completion_time_ms, deaths } = req.body;
+    const { level_id, completion_time_ms, deaths } = req.body ?? {};
     if (level_id == null || completion_time_ms == null || deaths == null) {
       return res.status(400).json({ status: 'error', message: 'level_id, completion_time_ms, deaths required' });
     }
@@ -93,10 +135,12 @@ export function createLevelsRouter({ db = pool } = {}) {
     if (typeof level_id !== 'string' || !level_id.trim()) {
       return res.status(400).json({ status: 'error', message: 'level_id must be a valid level id' });
     }
-    const lid = level_id.trim(),
-      time = parseInt(completion_time_ms, 10),
-      d = parseInt(deaths, 10);
-    if (isNaN(time) || isNaN(d)) return res.status(400).json({ status: 'error', message: 'Numeric values required' });
+    const lid = level_id.trim();
+    const time = toNonNegativeInt(completion_time_ms);
+    const d = toNonNegativeInt(deaths);
+    if (time === null || d === null) {
+      return res.status(400).json({ status: 'error', message: 'Numeric values required' });
+    }
 
     try {
       const result = await db.query(
@@ -105,31 +149,31 @@ export function createLevelsRouter({ db = pool } = {}) {
       );
       return res.status(201).json({ status: 'success', run: result.rows[0] });
     } catch (error) {
-      if (error.code === '22P02') {
+      if (error.code === INVALID_UUID) {
         return res.status(400).json({ status: 'error', message: 'level_id must be a valid level id' });
       }
-      if (error.code === '23503') {
-        return res.status(404).json({ status: 'error', message: 'Level not found' });
+      if (error.code === FOREIGN_KEY_VIOLATION) {
+        return levelNotFound(res);
       }
       console.error('Error creating run:', error);
-      return res.status(500).json({ status: 'error', message: 'Internal server error' });
+      return internalError(res);
     }
   });
 
   // PUT /levels/:id - Actualizar nivel (JWT)
   router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const { title, difficulty, grid_json } = req.body;
+    const validation = validateLevelPayload(req.body);
+    if (validation.fields) return invalidLevel(res, validation);
+
     try {
-      const result = await db.query(
-        'UPDATE levels SET title = $1, difficulty = $2, grid_json = $3 WHERE id = $4 RETURNING *',
-        [title, difficulty, JSON.stringify(grid_json), id],
-      );
-      if (result.rows.length === 0) return res.status(404).json({ status: 'error', message: 'Level not found' });
+      const result = await levelService.update(id, validation.value);
+      if (result.rows.length === 0) return levelNotFound(res);
       return res.status(200).json({ status: 'success', level: result.rows[0] });
     } catch (e) {
+      if (e.code === INVALID_UUID) return levelNotFound(res);
       console.error('Error updating level:', e);
-      return res.status(500).json({ status: 'error', message: 'Internal server error' });
+      return internalError(res);
     }
   });
 
@@ -137,12 +181,13 @@ export function createLevelsRouter({ db = pool } = {}) {
   router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     try {
-      const result = await db.query('DELETE FROM levels WHERE id = $1 RETURNING *', [id]);
-      if (result.rows.length === 0) return res.status(404).json({ status: 'error', message: 'Level not found' });
+      const result = await levelService.delete(id);
+      if (result.rows.length === 0) return levelNotFound(res);
       return res.status(200).json({ status: 'success', message: 'Level deleted', level: result.rows[0] });
     } catch (e) {
+      if (e.code === INVALID_UUID) return levelNotFound(res);
       console.error('Error deleting level:', e);
-      return res.status(500).json({ status: 'error', message: 'Internal server error' });
+      return internalError(res);
     }
   });
 
@@ -159,7 +204,7 @@ export function createLevelsRouter({ db = pool } = {}) {
       return res.status(200).json({ status: 'success', runs: result.rows });
     } catch (e) {
       console.error('Error fetching runs:', e);
-      return res.status(500).json({ status: 'error', message: 'Internal server error' });
+      return internalError(res);
     }
   });
 

@@ -12,6 +12,8 @@ const USERNAME_MAX_LENGTH = 50;
 const PASSWORD_MAX_BYTES = 72;
 const JWT_SECRET = process.env.JWT_SECRET;
 const JWT_EXPIRES_IN = '24h';
+// Hash bcrypt (costo 12) de una contraseña descartable, solo para igualar tiempos en el login.
+const TIMING_EQUALIZER_HASH = '$2b$12$gAKsE8hFVrUbuVtwuHzG5ulAP7PUEzE5VGffAiIxGQmcv80HWqhMG';
 
 function validateCredentials(body, { checkLength = false } = {}) {
   if (!body || typeof body !== 'object' || Array.isArray(body)) {
@@ -139,9 +141,12 @@ export function createAuthRouter({
       );
 
       const [user] = result.rows;
-      const passwordMatches = user
-        ? await passwordHasher.compare(login.password, user.password_hash)
-        : false;
+      // Se compara siempre contra un hash, aunque el usuario no exista, para que el
+      // tiempo de respuesta no revele qué usuarios están registrados.
+      const passwordMatches = await passwordHasher.compare(
+        login.password,
+        user ? user.password_hash : TIMING_EQUALIZER_HASH,
+      );
 
       if (!user || !passwordMatches) {
         return res.status(401).json({

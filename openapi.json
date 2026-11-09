@@ -246,6 +246,76 @@
       }
     },
     "/levels": {
+      "post": {
+        "tags": ["Levels"],
+        "summary": "Crear un nivel",
+        "description": "Crea un nivel nuevo asociado al usuario autenticado. Requiere autenticación JWT.",
+        "operationId": "createLevel",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateLevelRequest" },
+              "example": {
+                "title": "Nivel Avanzado",
+                "difficulty": "hard",
+                "grid_json": { "width": 15, "height": 15 }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Nivel creado exitosamente",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/LevelResponse" },
+                "example": {
+                  "status": "success",
+                  "level": {
+                    "id": "63c91dcc-943f-4013-b84d-92add8b35a30",
+                    "title": "Nivel Avanzado",
+                    "difficulty": "hard",
+                    "grid_json": { "width": 15, "height": 15 },
+                    "created_at": "2026-10-16T12:00:00.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos del nivel inválidos",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "status": "error",
+                  "message": "Invalid level data. title is required, difficulty must be one of: easy, medium, hard, expert, and grid_json must be a JSON object",
+                  "fields": ["title"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "No autenticado, o token inválido o expirado",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": { "status": "error", "message": "Authorization token is required" }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno del servidor",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      },
       "get": {
         "tags": ["Levels"],
         "summary": "Listar todos los niveles",
@@ -427,6 +497,19 @@
                     "grid_json": { "width": 15, "height": 15 },
                     "created_at": "2026-10-16T12:00:00.000Z"
                   }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Datos del nivel inválidos",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+                "example": {
+                  "status": "error",
+                  "message": "Invalid level data. title is required, difficulty must be one of: easy, medium, hard, expert, and grid_json must be a JSON object",
+                  "fields": ["title"]
                 }
               }
             }
@@ -816,7 +899,7 @@
             "properties": {
               "id": { "type": "string", "format": "uuid", "example": "63c91dcc-943f-4013-b84d-92add8b35a30" },
               "title": { "type": "string", "example": "Nivel Principiante" },
-              "difficulty": { "type": "string", "enum": ["easy", "medium", "hard"], "example": "easy" },
+              "difficulty": { "type": "string", "enum": ["easy", "medium", "hard", "expert"], "example": "easy" },
               "grid_json": {
                 "type": "object",
                 "description": "Configuración del tablero del nivel",
@@ -935,6 +1018,30 @@
           }
         }
       },
+      "CreateLevelRequest": {
+        "type": "object",
+        "required": ["title", "difficulty", "grid_json"],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Título del nivel",
+            "example": "Nivel Avanzado"
+          },
+          "difficulty": {
+            "type": "string",
+            "enum": ["easy", "medium", "hard", "expert"],
+            "description": "Dificultad del nivel",
+            "example": "hard"
+          },
+          "grid_json": {
+            "type": "object",
+            "description": "Configuración del tablero del nivel",
+            "example": { "width": 15, "height": 15 }
+          }
+        }
+      },
       "UpdateLevelRequest": {
         "type": "object",
         "required": ["title", "difficulty", "grid_json"],
@@ -942,13 +1049,13 @@
           "title": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 50,
+            "maxLength": 100,
             "description": "Nuevo título del nivel",
             "example": "Nivel Avanzado"
           },
           "difficulty": {
             "type": "string",
-            "enum": ["easy", "medium", "hard"],
+            "enum": ["easy", "medium", "hard", "expert"],
             "description": "Nueva dificultad del nivel",
             "example": "hard"
           },

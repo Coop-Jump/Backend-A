@@ -17,3 +17,10 @@ test('app retorna 400 para JSON malformado', async () => {
   assert.equal(res.status, 400);
   assert.equal(res.body.message, 'Invalid JSON body');
 });
+test('las rutas también responden bajo el prefijo /api', async () => {
+  const app = createApp({ logger: false });
+  const res = await request(app).get('/api/levels');
+  assert.equal(res.status, 401);
+  const res2 = await request(app).get('/levels');
+  assert.equal(res2.status, 401);
+});
