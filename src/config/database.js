@@ -8,7 +8,7 @@ const { Pool } = pg;
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '5432', 10),
-  database: process.env.DB_NAME || 'backend_a',
+  database: process.env.DB_NAME || 'game_db',
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   max: 20,
@@ -17,8 +17,8 @@ const pool = new Pool({
 });
 
 pool.on('error', (err) => {
+  // pg descarta el cliente roto y abre otro al próximo query: no hace falta tumbar el servidor.
   console.error('Unexpected error on idle client', err);
-  process.exit(-1);
 });
 
 export async function testConnection() {

@@ -4,6 +4,14 @@ export class LevelService {
     this.repository = repository;
   }
 
+  async findAll() {
+    return this.repository.findAll();
+  }
+
+  async findById(id) {
+    return this.repository.findById(id);
+  }
+
   async create(data) {
     return this.repository.create(data);
   }

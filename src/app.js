@@ -28,9 +28,12 @@ export function createApp({ authRouter: registeredAuthRouter = authRouter, logge
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  app.use('/health', healthRouter);
-  app.use('/auth', registeredAuthRouter);
-  app.use('/levels', authenticateToken, levelsRouter);
+  // Las rutas se exponen también bajo /api: el frontend usa baseURL ".../api".
+  for (const prefix of ['', '/api']) {
+    app.use(`${prefix}/health`, healthRouter);
+    app.use(`${prefix}/auth`, registeredAuthRouter);
+    app.use(`${prefix}/levels`, authenticateToken, levelsRouter);
+  }
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
   app.use((req, res) => {

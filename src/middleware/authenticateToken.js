@@ -33,7 +33,8 @@ export function createAuthenticateToken({
       req.user = payload;
       return next();
     } catch (error) {
-      return res.status(403).json({
+      // 401: el cliente debe volver a autenticarse (el frontend cierra sesión solo con 401)
+      return res.status(401).json({
         status: 'error',
         message: 'Invalid or expired token',
       });

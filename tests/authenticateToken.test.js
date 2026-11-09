@@ -67,7 +67,7 @@ test('returns 401 when the Authorization header is missing or malformed', async 
   }
 });
 
-test('returns 403 when the token is invalid or expired', async () => {
+test('returns 401 when the token is invalid or expired', async () => {
   const app = buildTestApp({
     verify: () => {
       const error = new Error('jwt expired');
@@ -80,7 +80,7 @@ test('returns 403 when the token is invalid or expired', async () => {
     .get('/protected')
     .set('Authorization', 'Bearer expired-token');
 
-  assert.equal(response.status, 403);
+  assert.equal(response.status, 401);
   assert.equal(response.body.status, 'error');
 });
 
