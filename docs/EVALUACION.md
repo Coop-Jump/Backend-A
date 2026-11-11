@@ -38,7 +38,7 @@
 
 | Alumno | Sesiones | Cumplimiento | Pausa | Recencia | IC | Nivel | Para subir de nivel |
 |---|--:|--:|--:|--:|--:|--|--|
-| Ivan Roth | 12 | 47% | 12 d | 86% | **42** | No aprueba | Cumplimiento 47% (mín. 50%) |
+| Ivan Roth | 13 | 51% | 12 d | 100% | **47** | Aprueba | Cumplimiento 51% (mín. 100%); Pausa 12 d (máx. 5 d) |
 
 > Para aprobar el IC: **2 sesiones por semana** sostenidas, sin pausas mayores a **10 días** y con actividad en las **últimas 2 semanas**. Se excluyen merges, bots y al docente. Zona horaria UTC-3.
 
@@ -151,11 +151,11 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 ## 6. Actividad en clase (miércoles y viernes)
 
-> Se consideran las **23 clases** del período (miércoles y viernes, según `config/constancia.json`; feriados y semanas sin clase descontados). `Commits` = commits de trabajo (no-merge); `Merges` = merges de PR (también son push). Los días sin actividad dicen **sin actividad**.
+> Se consideran las **26 clases** del período (miércoles y viernes, según `config/constancia.json`; feriados y semanas sin clase descontados). `Commits` = commits de trabajo (no-merge); `Merges` = merges de PR (también son push). Los días sin actividad dicen **sin actividad**.
 
 ### Ivan Roth
 
-**11/23 clases con actividad** · 19 commits · 19 merges
+**13/26 clases con actividad** · 23 commits · 23 merges
 
 | Fecha | Actividad | Repositorios | Commits / merges |
 |---|:--:|---|--:|
@@ -182,6 +182,9 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 | 2026-10-23 | **Sí** | Frontend-A | 1 / 1 |
 | 2026-10-28 | **Sí** | Backend-A, Frontend-A | 4 / 6 |
 | 2026-10-30 | **Sí** | Backend-A, Frontend-A | 2 / 2 |
+| 2026-11-04 | No | sin actividad | 0 / 0 |
+| 2026-11-06 | **Sí** | Backend-A, Frontend-A | 3 / 3 |
+| 2026-11-11 | **Sí** | Frontend-A | 1 / 1 |
 
 ## 7. Anexo: dónde mirar
 
