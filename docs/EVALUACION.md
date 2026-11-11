@@ -3,20 +3,20 @@
 
 > Documento **generado automáticamente** por la cátedra de Programación III (RepoSense + análisis de calidad + constancia). **No editar a mano**: se regenera en cada evaluación.
 > Rama evaluada: `main`. Análisis **heurístico** (regex + métricas): es una criba para orientar la revisión, **no una nota**.
-> Generado: 2026-11-06.
+> Generado: 2026-11-11.
 
 ## 1. Veredicto
 
 | Aspecto | Resultado |
 |---|---|
 | Tipo de proyecto | backend |
-| Índice de calidad de servicios | **100/100** (mínimo 50) |
-| Criterios cumplidos | **15/15** |
+| Índice de calidad de servicios | **91/100** (mínimo 50) |
+| Criterios cumplidos | **14/15** |
 | Aprobado (semáforo) | **SI** |
-| Código (LOC) | 530 |
-| Archivos de código | 10 |
-| Tests (archivos) | 19 |
-| Cobertura de líneas | 81.3% (mínimo 80%) |
+| Código (LOC) | 630 |
+| Archivos de código | 11 |
+| Tests (archivos) | 20 |
+| Cobertura de líneas | 85.3% (mínimo 80%) |
 | Capas detectadas | presentacion, logica, datos |
 | Pushes directos a `main` (sin PR) | 0 |
 
@@ -28,7 +28,7 @@
 
 | Autor | Commits | Código (LOC) | Tests (LOC) | Docs (LOC) | Días activos | % del código |
 |---|---:|---:|---:|---:|---:|---:|
-| Ivan Roth | 13 | 619 | 1,077 | 105 | 10 | 100% |
+| Ivan Roth | 15 | 753 | 1,257 | 105 | 12 | 100% |
 
 > _El LOC de autoría lo calcula RepoSense sobre el historial y puede diferir del LOC de código del análisis de calidad (que mira solo el estado de `main`)._
 
@@ -38,7 +38,7 @@
 
 | Alumno | Sesiones | Cumplimiento | Pausa | Recencia | IC | Nivel | Para subir de nivel |
 |---|--:|--:|--:|--:|--:|--|--|
-| Ivan Roth | 10 | 43% | 12 d | 57% | **36** | No aprueba | Cumplimiento 43% (mín. 50%) |
+| Ivan Roth | 12 | 47% | 12 d | 86% | **42** | No aprueba | Cumplimiento 47% (mín. 50%) |
 
 > Para aprobar el IC: **2 sesiones por semana** sostenidas, sin pausas mayores a **10 días** y con actividad en las **últimas 2 semanas**. Se excluyen merges, bots y al docente. Zona horaria UTC-3.
 
@@ -50,7 +50,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Un resumen numérico (0-100) que combina todas las señales y métricas del análisis, con topes duros por duplicación.
 - **Por qué importa:** Ordena y prioriza la revisión: un índice bajo indica varias señales que conviene mirar juntas.
-- **Tu resultado:** índice **100/100** _(mínimo 50)_
+- **Tu resultado:** índice **91/100** _(mínimo 50)_
 
 ### 2. Duplicación (DRY) (duplicacion) — OK
 
@@ -82,11 +82,15 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 - **Por qué importa:** Duplica la lógica de acceso a datos y acopla la vista al backend: un cambio de API toca muchos componentes.
 - **Tu resultado:** **0** llamada(s) a la API dentro de componente(s) _(máximo 0)_
 
-### 7. Depuración olvidada (DBG) — OK
+### 7. Depuración olvidada (DBG) — A REVISAR
 
 - **Qué mide:** Mensajes de depuración olvidados (`console.log`, `print`, `debugger`).
 - **Por qué importa:** Generan ruido en los registros, pueden filtrar datos y dan sensación de código sin terminar.
-- **Tu resultado:** **0** mensaje(s) de depuración olvidado(s) _(máximo 0)_
+- **Tu resultado:** **2** mensaje(s) de depuración olvidado(s) _(máximo 0)_
+- **Para investigar la causa:**
+    - ¿Fue depuración que quedó al cerrar una tarea, o se usó como registro permanente?
+    - ¿Hubo una revisión final antes de cerrar la issue o la entrega?
+    - ¿Quién agregó cada mensaje y con qué objetivo?
 
 ### 8. Uso del tipo `any` (Any) — OK
 
@@ -110,7 +114,7 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Complejidad ciclomática: cantidad de caminos posibles dentro de una función (condicionales, bucles, casos).
 - **Por qué importa:** Muchos caminos = difícil de seguir y de probar; suelen esconderse casos sin cubrir.
-- **Tu resultado:** **0** bloque(s) de complejidad alta _(máximo 5 por 1000 LOC (tenés 530 LOC))_
+- **Tu resultado:** **1** bloque(s) de complejidad alta _(máximo 5 por 1000 LOC (tenés 630 LOC))_
 
 ### 12. Funciones/métodos largos o con muchos parámetros (Tam) — OK
 
@@ -128,28 +132,32 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 - **Qué mide:** Porcentaje de líneas de código ejecutadas por la suite de tests (cobertura real, no cantidad de archivos de test).
 - **Por qué importa:** Un test que existe pero no ejecuta el código no protege de nada: la cobertura muestra qué partes quedan sin verificar.
-- **Tu resultado:** **81.3%** de líneas cubiertas · fuente: ejecución: c8 _(mínimo 80% de líneas)_
+- **Tu resultado:** **85.3%** de líneas cubiertas · fuente: ejecución: c8 _(mínimo 80% de líneas)_
 - **Qué no se consideró:** el informe de cobertura publicado en el repositorio no se aceptó (coverage.xml: declara cobertura de archivos que un runner de Python no puede medir (ej. src/app.js)).
 
 ### 15. Endpoints del backend (EP) — OK
 
 - **Qué mide:** Cantidad de endpoints (rutas HTTP) expuestos por el backend.
 - **Por qué importa:** El backend se mide por lo que expone: pocos endpoints sugiere poca funcionalidad de servicio.
-- **Tu resultado:** **10** endpoint(s) _(mínimo 5)_
+- **Tu resultado:** **11** endpoint(s) _(mínimo 5)_
 
 ## 5. Observaciones y qué falta
 
-_Cumple **todos** los criterios del semáforo: no hay nada que arreglar para aprobar. El siguiente objetivo es sostenerlo y mejorar duplicación y diseño._
+**Aprobado con observaciones.** Estos criterios quedan en rojo (se permiten hasta **3** sin que sean compuertas críticas), así que no bloquean la aprobación pero conviene corregirlos:
+
+| Criterio | Resultado actual | Meta | Brecha | Cómo alcanzarlo |
+|---|---|---|---|---|
+| Depuración olvidada (DBG) | **2** mensaje(s) de depuración olvidado(s) | máximo 0 | 2 caso(s) a eliminar | Borrá `console.log`/`print`/`debugger` del código de producción. Si necesitás registro, usá el logger del proyecto con el nivel adecuado. Meta: 0 casos. |
 
 ## 6. Actividad en clase (miércoles y viernes)
 
-> Se consideran las **23 clases** del período (miércoles y viernes; Nov 4 y 6 quedan afuera porque el calendario las marca sin clase). `Commits` = commits de trabajo (no-merge); `Merges` = merges de PR (también son push). Los días sin actividad dicen **sin actividad**.
+> Se consideran las **23 clases** del período (miércoles y viernes, según `config/constancia.json`; feriados y semanas sin clase descontados). `Commits` = commits de trabajo (no-merge); `Merges` = merges de PR (también son push). Los días sin actividad dicen **sin actividad**.
 
 ### Ivan Roth
 
 **11/23 clases con actividad** · 19 commits · 19 merges
 
-| Fecha | Marca | Repositorios | Commits / merges |
+| Fecha | Actividad | Repositorios | Commits / merges |
 |---|:--:|---|--:|
 | 2026-08-14 | **Sí** | Backend-A, Frontend-A | 2 / 0 |
 | 2026-08-19 | No | sin actividad | 0 / 0 |
@@ -177,7 +185,10 @@ _Cumple **todos** los criterios del semáforo: no hay nada que arreglar para apr
 
 ## 7. Anexo: dónde mirar
 
-_No hay criterios en rojo con archivos asociados._
+Archivos donde el análisis encontró cada señal en rojo (sin número de línea, a propósito):
+
+**Depuración olvidada (DBG)** — 1 archivo(s):
+- `src/index.js`
 
 ---
 _Informe generado por la cátedra. Los umbrales corresponden al perfil `exigente`. Ante dudas, revisá el archivo señalado y el criterio en `CRITERIOS-CALIDAD.md`._
