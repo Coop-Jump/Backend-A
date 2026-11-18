@@ -194,13 +194,16 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 |---|---|--:|
 | 2026-11-09 | Backend-A, Frontend-A | 4 / 5 |
 
-## 7. Anexo: dónde mirar
+## 7. Anexo: archivos donde se originan los problemas
 
-Archivos donde el análisis encontró cada señal en rojo (sin número de línea, a propósito):
+Se listan los archivos y líneas que el análisis marca para cada criterio en rojo. Para **duplicación** se muestran los archivos con más líneas repetidas; para **cobertura**, las unidades por debajo del umbral.
 
-**Depuración olvidada (DBG)** — 1 archivo(s):
-- `src/index.js`
+**Depuración olvidada (DBG)** — 2 hallazgo(s) en 1 archivo(s):
+
+| Archivo | Línea(s) | Señal |
+|---|---|---|
+| `src/index.js` | 24, 33 | salida de depuración olvidada |
 
 ---
-_Informe generado por la cátedra. Los umbrales corresponden al perfil `exigente`. Ante dudas, revisá el archivo señalado y el criterio en `CRITERIOS-CALIDAD.md`._
+_Informe generado por la cátedra. Los umbrales corresponden al perfil `exigente`. Ante dudas, revisá el archivo y la línea señalados y el criterio en `CRITERIOS-CALIDAD.md`._
 <!-- evaluacion:fin -->
