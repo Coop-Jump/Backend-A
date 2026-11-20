@@ -197,13 +197,21 @@ Cada aspecto indica **qué mide**, **por qué importa** y **tu resultado**. Cuan
 
 ## 7. Anexo: archivos donde se originan los problemas
 
-Se listan los archivos y líneas que el análisis marca para cada criterio en rojo. Para **duplicación** se muestran los archivos con más líneas repetidas; para **cobertura**, las unidades por debajo del umbral.
+Se listan **todos** los archivos y líneas que el análisis marca para cada criterio en rojo. Para **duplicación** se muestran los archivos con líneas repetidas; para **cobertura**, las unidades por debajo del umbral.
+
+**Resumen por archivo** — archivos con más hallazgos:
+
+| Archivo | Hallazgos | Peso total | Señales |
+|---|---:|---:|---|
+| `src/index.js` | 2 | 4 | debug_leftover |
+| `src/repositories/level.repository.js` | 1 | 8 | high_coupling |
+| `src/validators/level.validator.js` | 1 | 5 | high_complexity |
 
 **Depuración olvidada (DBG)** — 2 hallazgo(s) en 1 archivo(s):
 
-| Archivo | Línea(s) | Señal |
-|---|---|---|
-| `src/index.js` | 24, 33 | salida de depuración olvidada |
+| Archivo | Línea(s) | Señal | Detalle |
+|---|---|---|---|
+| `src/index.js` | 24, 33 | debug_leftover | salida de depuración olvidada |
 
 ---
 _Informe generado por la cátedra. Los umbrales corresponden al perfil `exigente`. Ante dudas, revisá el archivo y la línea señalados y el criterio en `CRITERIOS-CALIDAD.md`._
